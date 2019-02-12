@@ -18,14 +18,34 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>mealServlet</servlet-name>
-        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
+        <servlet-name>mealsServlet</servlet-name>
+        <servlet-class>ru.javawebinar.topjava.web.MealsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>mealServlet</servlet-name>
+        <servlet-name>mealsServlet</servlet-name>
         <url-pattern>/meals</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>mealServlet</servlet-name>
+        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mealServlet</servlet-name>
+        <url-pattern>/meal</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>CharsetFilter</filter-name>
+        <filter-class>ru.javawebinar.topjava.CharsetFilter</filter-class>
+        <init-param>
+            <param-name>requestEncoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharsetFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

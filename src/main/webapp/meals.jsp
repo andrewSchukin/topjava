@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <style>
@@ -33,21 +32,28 @@
         <table class="">
             <thead>
             <tr>
-                <td>Дата/время</td>
-                <td>Описание</td>
-                <td>Калории</td>
+                <th>Id</th>
+                <th>Дата/время</th>
+                <th>Описание</th>
+                <th>Калории</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <c:forEach var="list" items="${mealList}">
                 <tr class="${list.isExcess() eq true ? 'red' : 'green'}">
+                    <td>${list.getId()}</td>
                     <td>${list.getFormattedDateTime()}</td>
                     <td>${list.getDescription()}</td>
                     <td>${list.getCalories()}</td>
+                    <td><a href="meal?action=delete&id=<c:out value="${list.getId()}"/>">Delete</a></td>
+                    <td><a href="meal?action=edit&id=<c:out value="${list.getId()}"/>">Edit</a></td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
+        <a href="meal?action=add">Add meal</a>
     </div>
 </body>
 </html>
