@@ -6,15 +6,15 @@ import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class database {
 
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
-    private static List<Meal> meals = new ArrayList<>();
+    private static List<Meal> meals = new CopyOnWriteArrayList<>();
 
     static
     {
