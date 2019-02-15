@@ -20,6 +20,28 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
+    <jsp:useBean id="filterUtil" class="ru.javawebinar.topjava.util.FilterUtil" scope="request"/>
+    <form method="get" action="meals">
+        <table>
+            <tr>
+                <td>
+                    startDate: <input type="date" value="${filterUtil.startDate}" name="startDate">
+                </td>
+                <td>
+                    startTime: <input type="time" value="${filterUtil.startTime}" name="startTime">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    endDate: <input type="date" value="${filterUtil.endDate}" name="endDate">
+                </td>
+                <td>
+                    endTime: <input type="time" value="${filterUtil.endTime}" name="endTime">
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Apply filter</button>
+    </form>
     <a href="meals?action=create">Add Meal</a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
