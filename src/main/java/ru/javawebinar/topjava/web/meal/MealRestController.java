@@ -50,13 +50,13 @@ public class MealRestController {
 
     public List<MealTo> getAllOwnMeal(FilterUtil filter) {
         return MealsUtil.getFilteredWithExcess(
-                    service.getAll(
-                            authUserId(),
-                            filter.getStartDate() == null ? LocalDate.MIN : filter.getStartDate(),
-                            filter.getEndDate() == null ? LocalDate.MAX : filter.getEndDate()),
-                    authUserCaloriesPerDay(),
-                    filter.getStartTime() == null ? LocalTime.MIN : filter.getStartTime(),
-                    filter.getEndTime() == null ? LocalTime.MAX : filter.getEndTime());
+                service.getAll(
+                        authUserId(),
+                        filter.getStartDate() == null ? LocalDate.MIN : filter.getStartDate(),
+                        filter.getEndDate() == null ? LocalDate.MAX : filter.getEndDate()),
+                authUserCaloriesPerDay(),
+                filter.getStartTime() == null ? LocalTime.MIN : filter.getStartTime(),
+                filter.getEndTime() == null ? LocalTime.MAX : filter.getEndTime());
     }
 
     public Meal get(int id) throws NotFoundException {

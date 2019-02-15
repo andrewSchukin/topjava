@@ -18,5 +18,7 @@ public interface MealService {
 
     Collection<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate);
 
-    Meal get(int id, int userId) throws NotFoundException;;
+    Meal get(int id, int userId) throws NotFoundException;
+
+    ;
 }

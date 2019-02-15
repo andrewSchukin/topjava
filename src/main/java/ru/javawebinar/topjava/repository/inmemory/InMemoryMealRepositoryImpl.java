@@ -39,23 +39,23 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     {
         for (Meal meal : MealsUtil.MEALS) {
-            save(meal, null,1);
+            save(meal, null, 1);
         }
     }
 
     @Override
     public Meal save(Meal meal, Integer id, int userId) {
-            if (meal.isNew()) {
-                meal.setId(counter.incrementAndGet());
-                repository.put(meal.getId(), meal);
-                mealMapWithUser.put(meal.getId(), userId);
-                return meal;
-            }
-            if (isAccess(id, userId)) {
-                mealMapWithUser.put(id, userId);
-                // treat case: update, but absent in storage
-                return repository.computeIfPresent(meal.getId(), (key, val) -> meal);
-            }
+        if (meal.isNew()) {
+            meal.setId(counter.incrementAndGet());
+            repository.put(meal.getId(), meal);
+            mealMapWithUser.put(meal.getId(), userId);
+            return meal;
+        }
+        if (isAccess(id, userId)) {
+            mealMapWithUser.put(id, userId);
+            // treat case: update, but absent in storage
+            return repository.computeIfPresent(meal.getId(), (key, val) -> meal);
+        }
         return null;
     }
 
@@ -91,7 +91,7 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
                 .sorted(comparator).collect(Collectors.toList());
     }
 
-    private boolean isAccess (int id, int userId) {
+    private boolean isAccess(int id, int userId) {
         return mealMapWithUser.get(id) == userId;
     }
 }
