@@ -12,49 +12,37 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.lang.annotation.Retention;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
-    private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
-    private Map<Integer, Integer> mealMapWithUser = new ConcurrentHashMap<>();
-    private Comparator comparator = (Comparator<Meal>) (o1, o2) -> {
-        int result = 0;
-        if (!o1.getDateTime().equals(o2.getDateTime())) {
-            result += o1.getDateTime().isAfter(o2.getDateTime()) ? -1 : 1;
-        }
-        return result;
-    };
-
-    @Autowired
-    private UserRepository userRepository;
+    private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
+    private Comparator<Meal> comparator = Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder());
 
     {
+        MealsUtil.MEALS.forEach(meal -> save(meal, 1));
         for (Meal meal : MealsUtil.MEALS) {
-            save(meal, null, 1);
+            save(new Meal(meal.getDateTime(), meal.getDescription(), meal.getCalories()), 2);
         }
     }
 
     @Override
-    public Meal save(Meal meal, Integer id, int userId) {
+    public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.put(meal.getId(), meal);
-            mealMapWithUser.put(meal.getId(), userId);
+            putIntoRepository(meal, userId);
             return meal;
         }
-        if (isAccess(id, userId)) {
-            mealMapWithUser.put(id, userId);
+        if (isAccess(meal.getId(), userId)) {
+            putIntoRepository(meal, userId);
             // treat case: update, but absent in storage
-            return repository.computeIfPresent(meal.getId(), (key, val) -> meal);
+            return repository.get(userId).computeIfPresent(meal.getId(), (key, value) -> meal);
         }
         return null;
     }
@@ -62,37 +50,39 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     @Override
     public boolean delete(int id, int userId) {
         if (isAccess(id, userId)) {
-            boolean isRemove = false;
-            isRemove = repository.remove(id, repository.get(id));
-            if (isRemove)
-                mealMapWithUser.remove(id);
-            return isRemove;
+            return repository.get(userId).remove(id, repository.get(userId).get(id));
         }
-
         return false;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return isAccess(id, userId) ? repository.get(id) : null;
+        return isAccess(id, userId) ? repository.get(userId).get(id) : null;
     }
 
     @Override
-    public Collection<Meal> getAll() {
-        return (Collection) repository.values().stream()
-                .sorted(comparator).collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
-        return (Collection) repository.values().stream()
-                .filter(meal -> isAccess(meal.getId(), userId))
+    public List<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
+        return repository.getOrDefault(userId, new ConcurrentHashMap<>())
+                .values()
+                .stream()
                 .filter(meal -> DateTimeUtil.isBetween(meal.getDateTime().toLocalDate(), startDate, endDate))
                 .sorted(comparator).collect(Collectors.toList());
     }
 
     private boolean isAccess(int id, int userId) {
-        return mealMapWithUser.get(id) == userId;
+        if (repository.containsKey(userId) && repository.get(userId) != null)
+            if (repository.get(userId).containsKey(id))
+                return true;
+        return false;
+    }
+
+    private void putIntoRepository(Meal meal, int userId) { //computeIfPresent
+        if (repository.containsKey(userId) && repository.get(userId) != null) {
+            repository.get(userId).put(meal.getId(), meal);
+        } else {
+            repository.put(userId, new ConcurrentHashMap<>());
+            repository.get(userId).put(meal.getId(), meal);
+        }
     }
 }
 
