@@ -20,28 +20,22 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <h2>Meals</h2>
-    <%
-        Object startDate = request.getAttribute("startDate");
-        Object startTime = request.getAttribute("startTime");
-        Object endDate = request.getAttribute("endDate");
-        Object endTime = request.getAttribute("endTime");
-    %>
     <form method="get" action="meals">
         <table>
             <tr>
                 <td>
-                    startDate: <input type="date" value="<%= startDate%>" name="startDate">
+                    startDate: <input type="date" value="${param.startDate}" name="startDate">
                 </td>
                 <td>
-                    startTime: <input type="time" value="<%= startTime%>" name="startTime">
+                    startTime: <input type="time" value="${param.startTime}" name="startTime">
                 </td>
             </tr>
             <tr>
                 <td>
-                    endDate: <input type="date" value="<%= endDate%>" name="endDate">
+                    endDate: <input type="date" value="${param.endDate}" name="endDate">
                 </td>
                 <td>
-                    endTime: <input type="time" value="<%= endTime%>" name="endTime">
+                    endTime: <input type="time" value="${param.endTime}" name="endTime">
                 </td>
             </tr>
         </table>
