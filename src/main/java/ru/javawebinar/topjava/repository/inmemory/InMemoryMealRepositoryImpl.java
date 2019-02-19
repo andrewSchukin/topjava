@@ -39,21 +39,19 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return repository.get(userId).remove(id, repository.get(userId).get(id));
+        return repository.get(userId) != null ? repository.get(userId).remove(id, repository.get(userId).get(id)) : false;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return repository.get(userId).get(id);
+        return repository.get(userId) != null ? repository.get(userId).get(id) : null;
     }
 
     @Override
     public List<Meal> getAllForPeriod(int userId, LocalDate startDate, LocalDate endDate) {
-        return repository.getOrDefault(userId, new ConcurrentHashMap<>())
-                .values()
-                .stream()
+        return getAll(userId).stream()
                 .filter(meal -> DateTimeUtil.isBetween(meal.getDateTime().toLocalDate(), startDate, endDate))
-                .sorted(comparator).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
