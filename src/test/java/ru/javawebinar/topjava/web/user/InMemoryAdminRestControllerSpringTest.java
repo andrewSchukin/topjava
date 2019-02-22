@@ -17,22 +17,22 @@ import java.util.Collection;
 
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
-@ContextConfiguration("classpath:spring/spring-app.xml")
+@ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/spring-db.xml"})
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
     @Autowired
     private AdminRestController controller;
 
-    @Autowired
     private InMemoryUserRepositoryImpl repository;
 
     @Before
     public void setUp() throws Exception {
+        repository = new InMemoryUserRepositoryImpl();
         repository.init();
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();

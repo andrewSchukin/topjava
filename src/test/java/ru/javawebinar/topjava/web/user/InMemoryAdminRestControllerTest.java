@@ -20,7 +20,7 @@ public class InMemoryAdminRestControllerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml","spring/spring-db.xml");
         System.out.println("\n" + Arrays.toString(appCtx.getBeanDefinitionNames()) + "\n");
         controller = appCtx.getBean(AdminRestController.class);
     }
@@ -33,11 +33,11 @@ public class InMemoryAdminRestControllerTest {
     @Before
     public void setUp() throws Exception {
         // re-initialize
-        InMemoryUserRepositoryImpl repository = appCtx.getBean(InMemoryUserRepositoryImpl.class);
+        InMemoryUserRepositoryImpl repository = new InMemoryUserRepositoryImpl();
         repository.init();
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();
