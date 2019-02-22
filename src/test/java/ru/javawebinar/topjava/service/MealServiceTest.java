@@ -82,11 +82,21 @@ public class MealServiceTest {
         assertMatch(service.get(MEAL1_ID, getMeal1UserId()), updatedMeal);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void updateNotOwnMeal() {
+        Meal updatedMeal = new Meal(MEAL1_USER);
+        updatedMeal.setCalories(222);
+        updatedMeal.setDescription("Супер завтрак");
+        service.update(updatedMeal, getMeal2UserId());
+        assertMatch(service.get(MEAL1_ID, getMeal2UserId()), updatedMeal);
+    }
+
+
     @Test
     public void create() {
         Meal newMeal = new Meal(null, LocalDateTime.now(), "Еда вкусная", 1000);
         Meal created = service.create(newMeal, getMeal1UserId());
         newMeal.setId(created.getId());
-        assertMatch(service.getAll(getMeal1UserId()), newMeal, MEAL3_USER , MEAL2_USER, MEAL1_USER);
+        assertMatch(service.getAll(getMeal1UserId()), newMeal, MEAL3_USER, MEAL2_USER, MEAL1_USER);
     }
 }

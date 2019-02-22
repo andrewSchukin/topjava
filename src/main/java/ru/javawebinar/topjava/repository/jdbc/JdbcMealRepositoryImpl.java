@@ -28,8 +28,8 @@ public class JdbcMealRepositoryImpl implements MealRepository {
     @Autowired
     public JdbcMealRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
-                                .withTableName("meals")
-                                .usingGeneratedKeyColumns("id");
+                .withTableName("meals")
+                .usingGeneratedKeyColumns("id");
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -45,8 +45,8 @@ public class JdbcMealRepositoryImpl implements MealRepository {
         if (meal.isNew()) {
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
-        } else if(namedParameterJdbcTemplate.update(
-                "UPDATE meals SET date_time = :date_time, description = :description, "+
+        } else if (namedParameterJdbcTemplate.update(
+                "UPDATE meals SET date_time = :date_time, description = :description, " +
                         " calories = :calories WHERE id=:id and user_id = :user_id", map) == 0) {
             return null;
         }
@@ -61,7 +61,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        List<Meal> meals = jdbcTemplate.query( "SELECT * FROM meals WHERE id = ? and user_id = ?", ROW_MAPPER, id, userId);
+        List<Meal> meals = jdbcTemplate.query("SELECT * FROM meals WHERE id = ? and user_id = ?", ROW_MAPPER, id, userId);
         return DataAccessUtils.singleResult(meals);
     }
 
