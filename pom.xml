@@ -26,6 +26,9 @@
         <postgresql.version>42.2.5</postgresql.version>
         <!--    Tests  -->
         <junit.version>4.12</junit.version>
+
+        <!--Spring-->
+        <spring.version>5.1.2.RELEASE</spring.version>
     </properties>
 
     <build>
