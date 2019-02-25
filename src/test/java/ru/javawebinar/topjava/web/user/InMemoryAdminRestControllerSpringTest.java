@@ -11,28 +11,27 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Collection;
 
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
-@ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/spring-db.xml"})
+@ContextConfiguration({"classpath:spring/spring-db.xml", "classpath:spring/spring-test.xml"})
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
     @Autowired
     private AdminRestController controller;
 
+    @Autowired
     private InMemoryUserRepositoryImpl repository;
 
     @Before
     public void setUp() throws Exception {
-        repository = new InMemoryUserRepositoryImpl();
         repository.init();
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();

@@ -7,7 +7,6 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,7 +19,7 @@ public class InMemoryAdminRestControllerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml","spring/spring-db.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-db.xml", "spring/spring-test.xml");
         System.out.println("\n" + Arrays.toString(appCtx.getBeanDefinitionNames()) + "\n");
         controller = appCtx.getBean(AdminRestController.class);
     }
@@ -33,11 +32,11 @@ public class InMemoryAdminRestControllerTest {
     @Before
     public void setUp() throws Exception {
         // re-initialize
-        InMemoryUserRepositoryImpl repository = new InMemoryUserRepositoryImpl();
+        InMemoryUserRepositoryImpl repository = appCtx.getBean(InMemoryUserRepositoryImpl.class);
         repository.init();
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();

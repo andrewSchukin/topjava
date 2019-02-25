@@ -12,19 +12,11 @@ INSERT INTO user_roles (role, user_id) VALUES
   ('ROLE_ADMIN', 100001);
 
 INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100000, timestamp '2018-01-01 01:00:00' , 'Завтрак', 500);
+  (100000, '2018-01-01 01:00:00' , 'Завтрак', 500),
+  (100000, '2018-01-01 01:15:00' , 'Завтрак1', 100),
+  (100000, '2018-01-02 01:20:00' , 'Завтрак2', 200);
 
 INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100000, timestamp '2018-01-01 01:15:00' , 'Завтрак1', 100);
-
-INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100000, timestamp '2018-02-01 01:20:00' , 'Завтрак2', 200);
-
-INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100001, timestamp '2018-01-01 03:00:00' , 'Обед', 700);
-
-INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100001, timestamp '2018-01-01 03:15:00' , 'Обед2', 800);
-
-INSERT INTO meals (user_id, date_time, description, calories) VALUES
-  (100001, timestamp '2018-02-01 03:20:00' , 'Обед3', 900);
+  (100001, '2018-01-01 03:00:00' , 'Обед', 700),
+  (100001, '2018-01-01 03:15:00' , 'Обед2', 800),
+  (100001, '2018-01-02 03:20:00' , 'Обед3', 900);

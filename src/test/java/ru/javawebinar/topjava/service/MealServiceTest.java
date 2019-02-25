@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -30,47 +30,47 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void getNotFound() {
-        service.get(MEAL1_USER.getId(), getMeal2UserId());
+        service.get(MEAL1_USER.getId(), ADMIN_ID);
     }
 
     @Test
     public void get() {
-        Meal meal = service.get(MEAL1_ID, getMeal1UserId());
+        Meal meal = service.get(MEAL1_ID, USER_ID);
         assertEquals(meal, MEAL1_USER);
     }
 
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFound() {
-        service.delete(MEAL1_USER.getId(), getMeal2UserId());
+        service.delete(MEAL1_USER.getId(), ADMIN_ID);
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL1_ID, getMeal1UserId());
-        assertMatch(service.getAll(getMeal1UserId()), MEAL3_USER, MEAL2_USER);
+        service.delete(MEAL1_ID, USER_ID);
+        assertMatch(service.getAll(USER_ID), MEAL3_USER, MEAL2_USER);
     }
 
     @Test()
     public void getBetweenDates() {
-        List<Meal> mealList = service.getBetweenDates(LocalDateTime.parse("2018-02-01T00:00:00").toLocalDate(), LocalDateTime.parse("2018-02-01T00:00:00").toLocalDate(), getMeal2UserId());
+        List<Meal> mealList = service.getBetweenDates(LocalDateTime.of(2018, 01, 02, 0, 0).toLocalDate(), LocalDateTime.of(2018, 01, 02, 0, 0).toLocalDate(), ADMIN_ID);
         assertMatch(mealList, MEAL3_ADMIN);
     }
 
     @Test
     public void getBetweenDateTimes() {
-        List<Meal> mealList = service.getBetweenDateTimes(LocalDateTime.parse("2018-01-01T03:00:00"), LocalDateTime.parse("2018-01-01T03:15:00"), getMeal2UserId());
+        List<Meal> mealList = service.getBetweenDateTimes(LocalDateTime.of(2018, 01, 01, 3, 0), LocalDateTime.of(2018, 01, 01, 3, 15), ADMIN_ID);
         assertMatch(mealList, MEAL2_ADMIN, MEAL1_ADMIN);
     }
 
     @Test
     public void getAll() {
-        assertMatch(service.getAll(getMeal1UserId()), MEAL3_USER, MEAL2_USER, MEAL1_USER);
+        assertMatch(service.getAll(USER_ID), MEAL3_USER, MEAL2_USER, MEAL1_USER);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateNotFound() {
-        service.update(MEAL2_ADMIN, getMeal1UserId());
+        service.update(new Meal(9999, LocalDateTime.now(), "test", 2000), USER_ID);
     }
 
     @Test
@@ -78,8 +78,8 @@ public class MealServiceTest {
         Meal updatedMeal = new Meal(MEAL1_USER);
         updatedMeal.setCalories(1111);
         updatedMeal.setDescription("Супер завтрак");
-        service.update(updatedMeal, getMeal1UserId());
-        assertMatch(service.get(MEAL1_ID, getMeal1UserId()), updatedMeal);
+        service.update(updatedMeal, USER_ID);
+        assertMatch(service.get(MEAL1_ID, USER_ID), updatedMeal);
     }
 
     @Test(expected = NotFoundException.class)
@@ -87,16 +87,16 @@ public class MealServiceTest {
         Meal updatedMeal = new Meal(MEAL1_USER);
         updatedMeal.setCalories(222);
         updatedMeal.setDescription("Супер завтрак");
-        service.update(updatedMeal, getMeal2UserId());
-        assertMatch(service.get(MEAL1_ID, getMeal2UserId()), updatedMeal);
+        service.update(updatedMeal, ADMIN_ID);
+        assertMatch(service.get(MEAL1_ID, ADMIN_ID), updatedMeal);
     }
 
 
     @Test
     public void create() {
         Meal newMeal = new Meal(null, LocalDateTime.now(), "Еда вкусная", 1000);
-        Meal created = service.create(newMeal, getMeal1UserId());
+        Meal created = service.create(newMeal, USER_ID);
         newMeal.setId(created.getId());
-        assertMatch(service.getAll(getMeal1UserId()), newMeal, MEAL3_USER, MEAL2_USER, MEAL1_USER);
+        assertMatch(service.getAll(USER_ID), newMeal, MEAL3_USER, MEAL2_USER, MEAL1_USER);
     }
 }
