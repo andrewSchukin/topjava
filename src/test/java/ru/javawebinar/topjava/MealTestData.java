@@ -23,14 +23,6 @@ public class MealTestData {
     public static final Meal MEAL2_ADMIN = new Meal(MEAL2_ID + 1, LocalDateTime.of(2018, 1, 1, 3, 15), "Обед2", 800);
     public static final Meal MEAL3_ADMIN = new Meal(MEAL2_ID + 2, LocalDateTime.of(2018, 1, 2, 3, 20), "Обед3", 900);
 
-    public static int getMeal1UserId() {
-        return USER_ID;
-    }
-
-    public static int getMeal2UserId() {
-        return ADMIN_ID;
-    }
-
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
         assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(Arrays.asList(expected));
     }
