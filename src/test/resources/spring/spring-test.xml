@@ -5,14 +5,20 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-    <bean class="ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl" id="inMemoryUserRepositoryImpl"/>
+    <!--<bean class="ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl" id="inMemoryUserRepositoryImpl"/>-->
 
-    <bean class="ru.javawebinar.topjava.service.UserServiceImpl" id="userServiceImpl">
-        <constructor-arg name="repository" ref="inMemoryUserRepositoryImpl"/>
-    </bean>
+    <!--<bean class="ru.javawebinar.topjava.service.UserServiceImpl" id="userServiceImpl">-->
+        <!--<constructor-arg name="repository" ref="inMemoryUserRepositoryImpl"/>-->
+    <!--</bean>-->
 
-    <bean class="ru.javawebinar.topjava.web.user.AdminRestController" id="adminRestController">
-        <property name="service" ref="userServiceImpl"/>
-    </bean>
+    <!--<bean class="ru.javawebinar.topjava.web.user.AdminRestController" id="adminRestController">-->
+        <!--<property name="service" ref="userServiceImpl"/>-->
+    <!--</bean>-->
+
+    <context:component-scan base-package="ru.javawebinar.**.repository.inmemory"/>
+
+    <context:component-scan base-package="ru.javawebinar.**.service"/>
+
+    <context:component-scan base-package="ru.javawebinar.**.web.user"/>
 
 </beans>
