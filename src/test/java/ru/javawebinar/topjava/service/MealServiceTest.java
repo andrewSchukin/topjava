@@ -17,7 +17,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +32,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -73,7 +72,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void deleteNotFound() throws Exception{
+    public void deleteNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
         service.delete(MEAL1_ID, 1);
     }

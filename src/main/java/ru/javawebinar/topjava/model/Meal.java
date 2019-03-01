@@ -14,7 +14,7 @@ import java.time.LocalTime;
         @NamedQuery(name = Meal.ALL_SORTED_BETWEEN, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id and u.dateTime BETWEEN :date1 and :date2 ORDER BY u.dateTime DESC"),
 })
 @Entity
-@Table(name = "meals", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id","date_time"}, name = "meals_unique_user_datetime_idx")})
+@Table(name = "meals", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")})
 public class Meal extends AbstractBaseEntity {
 
     public static final String GET = "Meal.get";
