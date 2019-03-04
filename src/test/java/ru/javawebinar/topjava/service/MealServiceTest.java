@@ -18,6 +18,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -31,39 +33,45 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+
+    public static Map<String, Integer> report = new HashMap<>();
+
+    static {
+        SLF4JBridgeHandler.install();
+    }
+
+    public static void logInfo(String testName, long testDuration) {
+        log.info(String.format("test %s duration %d milliseconds ", testName, TimeUnit.NANOSECONDS.toMillis(testDuration)));
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
+
         @Override
         protected void finished(long nanos, Description description) {
-            log.info(String.format("test %s duration %d milliseconds ", description.getMethodName(), TimeUnit.NANOSECONDS.toMicros(nanos)));
-            totalTimeOfExecuteTest += TimeUnit.NANOSECONDS.toMicros(nanos);
+            report.put(description.getMethodName(), report.getOrDefault(description.getMethodName(), 0) + Long.valueOf(nanos).intValue());
+            logInfo(description.getMethodName(), nanos);
         }
 
     };
 
-    public static int totalTimeOfExecuteTest;
+    @AfterClass
+    public static void afterClass() {
 
-    static {
-        SLF4JBridgeHandler.install();
+        for (Map.Entry<String, Integer> entry : report.entrySet()) {
+            logInfo(entry.getKey(), entry.getValue());
+        }
+
     }
 
     @Autowired
     private MealService service;
 
-    @AfterClass
-    public static void afterClass() {
-        log.info(String.format("All test %s duration %d milliseconds ", MealServiceTest.class.getSimpleName(), totalTimeOfExecuteTest));
-    }
-
-    @BeforeClass
-    public static void BeforeClass() {
-        totalTimeOfExecuteTest = 0;
-    }
 
     @Test
     public void delete() throws Exception {
@@ -105,8 +113,9 @@ public class MealServiceTest {
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.update(MEAL1, ADMIN_ID);
     }
 
