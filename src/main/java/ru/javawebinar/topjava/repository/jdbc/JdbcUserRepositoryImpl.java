@@ -50,12 +50,14 @@ public class JdbcUserRepositoryImpl implements UserRepository {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
             insertRoles(user);
-        } else if (namedParameterJdbcTemplate.update(
-                "UPDATE users SET name=:name, email=:email, password=:password, " +
-                        "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
+        } else {
+            if (namedParameterJdbcTemplate.update(
+                    "UPDATE users SET name=:name, email=:email, password=:password, " +
+                            "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
+                return null;
+            }
             deleteRoles(user);
             insertRoles(user);
-            return null;
         }
         return user;
     }
@@ -87,7 +89,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         Map<Integer, Set<Role>> userRoles = new HashMap<>();
 
         jdbcTemplate.query("SELECT role, user_id FROM user_roles",
-                (rs, rowNum) -> userRoles.computeIfAbsent(rs.getInt("user_id"), k -> new HashSet<Role>()).add(Role.valueOf(rs.getString("role"))));
+                (rs, rowNum) -> userRoles.computeIfAbsent(rs.getInt("user_id"), k -> new HashSet<Role>())
+                        .add(Role.valueOf(rs.getString("role"))));
 
         users.forEach(user -> user.setRoles(userRoles.get(user.getId())));
         return users;
@@ -119,7 +122,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     private User setRoles(User user) {
-        List<Role> roles = jdbcTemplate.query("SELECT role FROM  user_roles WHERE user_id = ?", (rs, rowNum) -> Role.valueOf(rs.getString("role")), user.getId());
+        List<Role> roles = jdbcTemplate.query("SELECT role FROM  user_roles WHERE user_id = ?",
+                (rs, rowNum) -> Role.valueOf(rs.getString("role")), user.getId());
         user.setRoles(roles);
         return user;
     }

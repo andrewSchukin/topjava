@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -25,13 +26,15 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     private CacheManager cacheManager;
 
-    @Autowired
+    @Autowired(required = false)
     protected JpaUtil jpaUtil;
 
     @Before
     public void setUp() throws Exception {
         cacheManager.getCache("users").clear();
-        jpaUtil.clear2ndLevelHibernateCache();
+        if (jpaUtil != null) {
+            jpaUtil.clear2ndLevelHibernateCache();
+        }
     }
 
     @Test
@@ -98,5 +101,31 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.ROLE_USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Collections.emptySet())), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Collections.emptySet())), ConstraintViolationException.class);
+    }
+
+    @Test
+    public void addRole() {
+        User user = service.get(USER_ID);
+        Set<Role> userRoles = user.getRoles();
+        userRoles.add(Role.ROLE_ADMIN);
+        user.setRoles(userRoles);
+        service.update(user);
+        assertMatch(service.get(USER_ID).getRoles(), Role.ROLE_USER, Role.ROLE_ADMIN);
+    }
+
+    @Test
+    public void deleteRole() {
+        User user = service.get(ADMIN_ID);
+        Set<Role> userRoles = user.getRoles();
+        userRoles.remove(Role.ROLE_USER);
+        user.setRoles(userRoles);
+        service.update(user);
+        assertMatch(service.get(USER_ID).getRoles(), Role.ROLE_ADMIN);
+    }
+
+    @Test
+    public void getUserWithSomeRoles() {
+        User user = service.get(ADMIN_ID);
+        assertMatch(user, ADMIN);
     }
 }
