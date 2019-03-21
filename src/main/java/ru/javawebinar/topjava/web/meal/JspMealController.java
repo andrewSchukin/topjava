@@ -18,7 +18,7 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
 @RequestMapping(value = "/meals")
-public class JspMealController extends AbstractMealRestController {
+public class JspMealController extends MealRestController {
 
     @GetMapping("")
     public String meals(Model model) {

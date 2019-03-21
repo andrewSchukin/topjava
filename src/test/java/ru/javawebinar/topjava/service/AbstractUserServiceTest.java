@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import org.springframework.core.env.Environment;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Collections;
@@ -26,15 +27,12 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     private CacheManager cacheManager;
 
-    @Autowired(required = false)
-    protected JpaUtil jpaUtil;
+    @Autowired
+    private Environment environment;
 
     @Before
     public void setUp() throws Exception {
         cacheManager.getCache("users").clear();
-        if (jpaUtil != null) {
-            jpaUtil.clear2ndLevelHibernateCache();
-        }
     }
 
     @Test
@@ -96,6 +94,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void testValidation() throws Exception {
+        for (String profile : environment.getActiveProfiles()) {
+            if ("jdbc".equals(profile)) {
+                Assume.assumeTrue(false);
+            }
+        }
         validateRootCause(() -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.ROLE_USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "  ", "password", Role.ROLE_USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.ROLE_USER)), ConstraintViolationException.class);
@@ -108,9 +111,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         User user = service.get(USER_ID);
         Set<Role> userRoles = user.getRoles();
         userRoles.add(Role.ROLE_ADMIN);
-        user.setRoles(userRoles);
         service.update(user);
-        assertMatch(service.get(USER_ID).getRoles(), Role.ROLE_USER, Role.ROLE_ADMIN);
+        assertMatch(service.get(USER_ID), user);
     }
 
     @Test
@@ -118,9 +120,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         User user = service.get(ADMIN_ID);
         Set<Role> userRoles = user.getRoles();
         userRoles.remove(Role.ROLE_USER);
-        user.setRoles(userRoles);
         service.update(user);
-        assertMatch(service.get(USER_ID).getRoles(), Role.ROLE_ADMIN);
+        assertMatch(service.get(ADMIN_ID), user);
     }
 
     @Test
@@ -128,4 +129,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         User user = service.get(ADMIN_ID);
         assertMatch(user, ADMIN);
     }
+
+    @Test
+    public void getUserByEmailWithSomeRoles() {
+        User user = service.getByEmail("admin@gmail.com");
+        assertMatch(user, ADMIN);
+    }
+
 }
