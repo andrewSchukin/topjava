@@ -1,19 +1,23 @@
 package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 import java.time.Month;
+import java.util.List;
 
 import static java.time.LocalDateTime.of;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -22,13 +26,16 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = MealRestController.REST_URL + "/";
 
+    @Autowired
+    protected MealService mealService;
+
     @Test
     void testGetAll() throws Exception{
         mockMvc.perform(get(REST_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MEALS));
+                .andExpect(contentJson(MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
     }
 
     @Test
@@ -77,6 +84,17 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testGetBetween() throws Exception{
         mockMvc.perform(get(REST_URL
+                + "between?startDateTime=" + "2015-05-31T00:00" + "&endDateTime=" + "2015-06-01T23:59"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
+
+    }
+
+    @Test
+    void testGetBetweenFilter() throws Exception{
+        mockMvc.perform(get(REST_URL
                 + "filter?startDate=" + "2015-05-31"
                 + "&startTime=" + "00:00"
                 + "&endDate=" + "2015-06-01"
@@ -84,7 +102,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MEAL6, MEAL5, MEAL4 ));
+                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
 
     }
 }
