@@ -15,6 +15,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 public class MealTestData {
     public static final int MEAL1_ID = START_SEQ + 2;
     public static final int ADMIN_MEAL_ID = START_SEQ + 8;
+    public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
     public static final Meal MEAL1 = new Meal(MEAL1_ID, of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500);
     public static final Meal MEAL2 = new Meal(MEAL1_ID + 1, of(2015, Month.MAY, 30, 13, 0), "Обед", 1000);
@@ -35,16 +36,28 @@ public class MealTestData {
         return new Meal(MEAL1_ID, MEAL1.getDateTime(), "Обновленный завтрак", 200);
     }
 
-    public static <T> void assertMatch(T actual, T expected) {
+    public static void assertMatch(Meal actual, Meal expected) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "user");
     }
 
-    public static <T> void assertMatch(Iterable<T> actual, T... expected) {
+    public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
         assertMatch(actual, List.of(expected));
     }
 
-    public static <T> void assertMatch(Iterable<T> actual, Iterable<T> expected) {
+    public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("user").isEqualTo(expected);
+    }
+
+    public static <T> void assertMatch(T actual, T expected) {
+        assertThat(actual).isEqualToComparingFieldByField(expected);
+    }
+
+    public static <T> void assertMatch(Iterable<T> actual, T... expected) {
+        assertMatchGeneric(actual, List.of(expected));
+    }
+
+    public static <T> void assertMatchGeneric(Iterable<T> actual, Iterable<T> expected) {
+        assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
     }
 
     public static <T> ResultMatcher contentJson(T expected) {
@@ -52,7 +65,7 @@ public class MealTestData {
     }
 
     public static <T> ResultMatcher contentJson(List<T> expected, Class<T> clazz) {
-        return result -> assertMatch(readListFromJsonMvcResult(result, clazz), expected);
+        return result -> assertMatchGeneric(readListFromJsonMvcResult(result, clazz), expected);
     }
 
     public static <T> ResultMatcher contentJson(T... expected) {

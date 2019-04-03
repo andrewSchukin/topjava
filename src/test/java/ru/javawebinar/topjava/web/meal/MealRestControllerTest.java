@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
-import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 import java.time.Month;
 import java.util.List;
@@ -35,7 +34,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MealsUtil.getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
+                .andExpect(contentJson(MealsUtil.getWithExcess(MEALS, DEFAULT_CALORIES_PER_DAY), MealTo.class));
     }
 
     @Test
@@ -57,7 +56,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateWithLocation() throws Exception{
-        Meal expected = new Meal(null, of(2015, Month.MAY, 29, 10, 0), "Завтрак 2", SecurityUtil.authUserCaloriesPerDay());
+        Meal expected = new Meal(null, of(2015, Month.MAY, 29, 10, 0), "Завтрак 2", DEFAULT_CALORIES_PER_DAY);
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(expected)))
@@ -84,17 +83,6 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testGetBetween() throws Exception{
         mockMvc.perform(get(REST_URL
-                + "between?startDateTime=" + "2015-05-31T00:00" + "&endDateTime=" + "2015-06-01T23:59"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
-
-    }
-
-    @Test
-    void testGetBetweenFilter() throws Exception{
-        mockMvc.perform(get(REST_URL
                 + "filter?startDate=" + "2015-05-31"
                 + "&startTime=" + "00:00"
                 + "&endDate=" + "2015-06-01"
@@ -102,7 +90,20 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), SecurityUtil.authUserCaloriesPerDay()), MealTo.class));
+                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), DEFAULT_CALORIES_PER_DAY), MealTo.class));
+
+    }
+
+    @Test
+    void testGetBetweenWithoutEndDate() throws Exception{
+        mockMvc.perform(get(REST_URL
+                + "filter?startDate=" + "2015-05-31"
+                + "&startTime=" + "00:00"
+                + "&endTime=" + "23:59"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL6, MEAL5, MEAL4), DEFAULT_CALORIES_PER_DAY), MealTo.class));
 
     }
 }
