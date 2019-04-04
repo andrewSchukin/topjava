@@ -1,4 +1,4 @@
-let context, form;
+var context, form;
 
 function makeEditable(ctx) {
     context = ctx;
@@ -50,7 +50,7 @@ function save() {
     });
 }
 
-let failedNote;
+var failedNote;
 
 function closeNoty() {
     if (failedNote) {
