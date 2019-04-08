@@ -116,4 +116,5 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         }
         return u;
     }
+
 }

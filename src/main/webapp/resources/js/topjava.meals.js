@@ -1,41 +1,36 @@
-const userAjaxUrl = "ajax/admin/users/";
+const mealAjaxUrl = "ajax/profile/meals/";
 
-function enable(chkbox, id) {
-    const enabled = chkbox.is(":checked");
-//  https://stackoverflow.com/a/22213543/548473
+function updateByFilter() {
     $.ajax({
-        url: userAjaxUrl + id,
-        type: "POST",
-        data: "enabled=" + enabled
-    }).done(function () {
-        chkbox.closest("tr").attr("data-userEnabled", enabled);
-    }).fail(function () {
-        $(chkbox).prop("checked", !enabled);
+        type: "GET",
+        url: mealAjaxUrl + "filter",
+        data: $("#filter").serialize(),
+        success: function(data) {
+            context.datatableApi.clear().rows.add(data).draw();
+        }
     });
 }
 
-// $(document).ready(function () {
+function clearTable() {
+    $("#filter")[0].reset();
+    $.get(mealAjaxUrl, updateByFilter);
+}
+
 $(function () {
     makeEditable({
-            ajaxUrl: userAjaxUrl,
+            ajaxUrl: mealAjaxUrl,
             datatableApi: $("#datatable").DataTable({
                 "paging": false,
                 "info": true,
                 "columns": [
                     {
-                        "data": "name"
+                        "data": "dateTime"
                     },
                     {
-                        "data": "email"
+                        "data": "description"
                     },
                     {
-                        "data": "roles"
-                    },
-                    {
-                        "data": "enabled"
-                    },
-                    {
-                        "data": "registered"
+                        "data": "calories"
                     },
                     {
                         "defaultContent": "Edit",
@@ -51,7 +46,11 @@ $(function () {
                         0,
                         "asc"
                     ]
-                ]
+                ],
+                "createdRow": function (row, data) {
+                    $(row).attr("data-mealExcess", data.excess);
+                },
+                updateTable: updateByFilter
             })
         }
     );
