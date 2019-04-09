@@ -27,11 +27,11 @@
                         </div>
                         <div class="offset-2 col-2">
                             <label for="startTime"><spring:message code="meal.startTime"/></label>
-                            <input type="date" class="form-control" name="startTime" id="startTime" value="${param.startTime}">
+                            <input type="time" class="form-control" name="startTime" id="startTime" value="${param.startTime}">
                         </div>
                         <div class="col-2">
                             <label for="endTime"><spring:message code="meal.endTime"/></label>
-                            <input type="date" class="form-control" name="endTime" id="endTime" value="${param.endTime}">
+                            <input type="time" class="form-control" name="endTime" id="endTime" value="${param.endTime}">
                         </div>
                     </div>
                 </form>

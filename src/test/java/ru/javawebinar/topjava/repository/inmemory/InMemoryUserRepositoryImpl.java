@@ -37,4 +37,10 @@ public class InMemoryUserRepositoryImpl extends InMemoryBaseRepositoryImpl<User>
                 .findFirst()
                 .orElse(null);
     }
+
+    public boolean updateState(int id, boolean enabled) {
+        super.get(id).setEnabled(enabled);
+        return true;
+    }
+
 }

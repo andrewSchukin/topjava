@@ -10,6 +10,7 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -81,5 +82,21 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(ADMIN, USER));
+    }
+
+    @Test
+    void testUpdateStateSetEnabled() throws Exception {
+        mockMvc.perform(put(REST_URL + USER_ID + "?enabled=true"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+        assertEquals(userService.get(USER_ID).isEnabled(), true);
+    }
+
+    @Test
+    void testUpdateStateSetDisabled() throws Exception {
+        mockMvc.perform(put(REST_URL + USER_ID + "?enabled=false"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+        assertEquals(userService.get(USER_ID).isEnabled(), false);
     }
 }

@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "users", allEntries = true)
     public void updateState(int id, boolean enabled) {
         checkNotFoundWithId(repository.updateState(id, enabled), id);
     }

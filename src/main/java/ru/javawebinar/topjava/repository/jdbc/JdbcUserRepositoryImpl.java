@@ -5,6 +5,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -117,4 +118,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         return u;
     }
 
+    @Override
+    @Transactional
+    public boolean updateState(int id, boolean enabled) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("id", id);
+        parameterSource.addValue("enabled", enabled);
+        return namedParameterJdbcTemplate.update("UPDATE users SET enabled = :enabled WHERE id = :id", parameterSource) != 0;
+    }
 }
