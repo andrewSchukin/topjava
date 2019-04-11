@@ -53,7 +53,10 @@ $(function () {
                         "asc"
                     ]
                 ]
-            })
+            }),
+            updateTable: function () {
+                $.get(userAjaxUrl, updateTableByData);
+            }
         }
     );
 });

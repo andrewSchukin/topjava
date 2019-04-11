@@ -6,7 +6,7 @@ function updateByFilter() {
         url: mealAjaxUrl + "filter",
         data: $("#filter").serialize(),
         success: function(data) {
-            context.datatableApi.clear().rows.add(data).draw();
+            updateTableByData(data);
         }
     });
 }
@@ -49,9 +49,9 @@ $(function () {
                 ],
                 "createdRow": function (row, data) {
                     $(row).attr("data-mealExcess", data.excess);
-                },
-                updateTable: updateByFilter
-            })
+                }
+            }),
+        updateTable: updateByFilter
         }
     );
 });
