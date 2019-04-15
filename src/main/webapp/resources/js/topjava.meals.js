@@ -1,25 +1,37 @@
+const userAjaxUrl = "ajax/profile/meals/"
+
 function updateFilteredTable() {
     $.ajax({
         type: "GET",
-        url: "ajax/profile/meals/filter",
+        url: userAjaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get("ajax/profile/meals/", updateTableByData);
+    $.get(userAjaxUrl, updateTableByData);
 }
 
 $(function () {
     makeEditable({
-        ajaxUrl: "ajax/profile/meals/",
+        ajaxUrl: userAjaxUrl,
         datatableApi: $("#datatable").DataTable({
+            "ajax": {
+                "url": userAjaxUrl,
+                "dataSrc": ""
+            },
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime"
+                    "data": "dateTime",
+                    "render":function (data, type, row) {
+                        if (type === "display") {
+                            return row.dateTime.replace('T', ' ').substr(0,16);
+                        }
+                        return data;
+                    }
                 },
                 {
                     "data": "description"
@@ -41,8 +53,25 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                if (!data.enabled) {
+                    $(row).attr("data-mealExcess", data.excess);
+                }
+            }
         }),
         updateTable: updateFilteredTable
     });
+    startDate = $('#startDate');
+    startDate.datetimepicker({format:'Y-m-d', timepicker:false});
+
+    endDate = $('#endDate');
+    endDate.datetimepicker({format:'Y-m-d',timepicker:false});
+
+    startTime = $('#startTime');
+    startTime.datetimepicker({format:'H:i',datepicker:false});
+
+    endTime = $('#endTime');
+    endTime.datetimepicker({format:'H:i',datepicker:false});
+
 });
