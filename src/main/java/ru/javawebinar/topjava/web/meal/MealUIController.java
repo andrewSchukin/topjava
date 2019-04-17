@@ -5,15 +5,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.to.MealToUI;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.StringJoiner;
 
-import static ru.javawebinar.topjava.util.MealsUtil.createNewFromTo;
+import static ru.javawebinar.topjava.util.MealsUtil.createNewFromToUI;
+import static ru.javawebinar.topjava.util.MealsUtil.updateFromToUI;
 import static ru.javawebinar.topjava.util.Util.checkErrors;
 
 @RestController
@@ -26,6 +28,11 @@ public class MealUIController extends AbstractMealController {
         return super.getAll();
     }
 
+    @GetMapping("/{id}")
+    public Meal get(@PathVariable int id) {
+        return super.get(id);
+    }
+
     @Override
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -35,15 +42,15 @@ public class MealUIController extends AbstractMealController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> createOrUpdate(@Valid MealTo mealTo, BindingResult result) {
+    public ResponseEntity<String> createOrUpdate(@Valid MealToUI mealToUI, BindingResult result) {
         ResponseEntity<String> validationError = checkErrors(result);
         if (validationError != null) {
             return validationError;
         }
-        if (mealTo.isNew()) {
-            super.create(createNewFromTo(mealTo));
+        if (mealToUI.isNew()) {
+            super.create(createNewFromToUI(mealToUI));
         } else {
-            super.update(mealTo, mealTo.getId());
+            super.update(updateFromToUI(super.get(mealToUI.getId()), mealToUI), mealToUI.getId());
         }
         return ResponseEntity.ok().build();
     }

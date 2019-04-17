@@ -1,37 +1,43 @@
-const userAjaxUrl = "ajax/profile/meals/"
+const mealsAjaxUrl = "ajax/profile/meals/"
 
 function updateFilteredTable() {
     $.ajax({
         type: "GET",
-        url: userAjaxUrl + "filter",
+        url: mealsAjaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get(userAjaxUrl, updateTableByData);
+    $.get(mealsAjaxUrl, updateTableByData);
 }
+
+$.ajaxSetup({
+    converters: {
+        "text json": function (stringData) {
+            const json = JSON.parse(stringData);
+            $(json).each(function () {
+                this.dateTime = this.dateTime.replace('T', ' ').substr(0, 16);
+            });
+            return json;
+        }
+    }
+});
 
 $(function () {
     makeEditable({
-        ajaxUrl: userAjaxUrl,
+        ajaxUrl: mealsAjaxUrl,
         datatableApi: $("#datatable").DataTable({
             "ajax": {
-                "url": userAjaxUrl,
+                "url": mealsAjaxUrl,
                 "dataSrc": ""
             },
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime",
-                    "render":function (data, type, row) {
-                        if (type === "display") {
-                            return row.dateTime.replace('T', ' ').substr(0,16);
-                        }
-                        return data;
-                    }
+                    "data": "dateTime"
                 },
                 {
                     "data": "description"
@@ -40,12 +46,14 @@ $(function () {
                     "data": "calories"
                 },
                 {
-                    "defaultContent": "Edit",
-                    "orderable": false
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": renderEditBtn
                 },
                 {
-                    "defaultContent": "Delete",
-                    "orderable": false
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": renderDeleteBtn
                 }
             ],
             "order": [
@@ -73,5 +81,8 @@ $(function () {
 
     endTime = $('#endTime');
     endTime.datetimepicker({format:'H:i',datepicker:false});
+
+    dateTime = $('#dateTime');
+    dateTime.datetimepicker({format: 'Y-m-d H:i'});
 
 });

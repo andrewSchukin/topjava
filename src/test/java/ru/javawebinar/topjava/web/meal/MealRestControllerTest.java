@@ -84,8 +84,10 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testFilter() throws Exception {
         mockMvc.perform(get(REST_URL + "filter")
-                .param("startDateTime", "2015-05-30T07:00")
-                .param("endDateTime", "2015-05-31T11:00")
+                .param("startDate", "2015-05-30")
+                .param("startTime", "07:00")
+                .param("endDate", "2015-05-31")
+                .param("endTime", "11:00")
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andDo(print())

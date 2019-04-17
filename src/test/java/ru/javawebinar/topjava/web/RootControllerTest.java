@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.web;
 
 import org.junit.jupiter.api.Test;
+import ru.javawebinar.topjava.util.UserUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -39,6 +40,6 @@ class RootControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("meals"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/meals.jsp"))
-                .andExpect(model().attribute("meals", getWithExcess(MEALS, SecurityUtil.authUserCaloriesPerDay())));
+                .andExpect(model().attribute("meals", getWithExcess(MEALS, UserUtil.DEFAULT_CALORIES_PER_DAY)));
     }
 }
