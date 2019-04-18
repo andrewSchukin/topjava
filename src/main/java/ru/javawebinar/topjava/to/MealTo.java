@@ -12,17 +12,10 @@ import java.util.Objects;
 
 public class MealTo extends BaseTo {
 
-    @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateTime;
 
-    @NotBlank
-    @Size(min = 2, max = 120)
     private String description;
 
-    @NotNull
-    @Convert
-    @Range(min = 10, max = 5000)
     private int calories;
 
     private boolean excess;

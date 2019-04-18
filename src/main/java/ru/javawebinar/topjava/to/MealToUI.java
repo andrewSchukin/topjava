@@ -6,10 +6,12 @@ import javax.persistence.Convert;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MealToUI extends BaseTo {
+public class MealToUI extends BaseTo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @NotNull
     private LocalDateTime dateTime;
@@ -18,8 +20,6 @@ public class MealToUI extends BaseTo {
     @Size(min = 2, max = 120)
     private String description;
 
-    @NotNull
-    @Convert
     @Range(min = 10, max = 5000)
     private int calories;
 
