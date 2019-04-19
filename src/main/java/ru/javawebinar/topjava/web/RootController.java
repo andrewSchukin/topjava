@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,18 +11,22 @@ import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.user.AbstractUserController;
+import ru.javawebinar.topjava.web.validator.UserValidator;
 
 import javax.validation.Valid;
 
 @Controller
 public class RootController extends AbstractUserController {
 
+    @Autowired
+    UserValidator userFormValidator;
+
     @GetMapping("/")
     public String root() {
         return "redirect:meals";
     }
 
-//    @Secured("ROLE_ADMIN")
+    //    @Secured("ROLE_ADMIN")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/users")
     public String users() {
@@ -45,6 +50,7 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/profile")
     public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status) {
+        userFormValidator.validate(userTo, result);
         if (result.hasErrors()) {
             return "profile";
         } else {
@@ -64,6 +70,7 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/register")
     public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap model) {
+        userFormValidator.validate(userTo, result);
         if (result.hasErrors()) {
             model.addAttribute("register", true);
             return "profile";

@@ -72,7 +72,8 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testUpdate() throws Exception {
         Meal updated = getUpdated();
-
+        updated.setUser(USER);
+        updated.setDateTime(updated.getDateTime().plusDays(10));
         mockMvc.perform(put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
@@ -85,6 +86,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testCreate() throws Exception {
         Meal created = getCreated();
+        created.setUser(USER);
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(created))
@@ -124,5 +126,29 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andExpect(contentJson(getWithExcess(MEALS, USER.getCaloriesPerDay())));
+    }
+
+    @Test
+    void testUpdateInvalidData() throws Exception {
+        Meal updated = getUpdated();
+        updated.setUser(USER);
+        updated.setDescription("");
+        mockMvc.perform(put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void testCreateInvalidData() throws Exception {
+        Meal created = getCreated();
+        created.setUser(USER);
+        created.setCalories(5);
+        ResultActions action = mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
     }
 }

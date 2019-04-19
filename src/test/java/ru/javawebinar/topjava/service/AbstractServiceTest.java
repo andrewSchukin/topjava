@@ -12,6 +12,9 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.TimingExtension;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 
@@ -27,6 +30,10 @@ abstract class AbstractServiceTest {
 
     @Autowired
     private Environment env;
+
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     static {
         // needed only for java.util.logging (postgres driver)
